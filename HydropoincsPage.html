@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SBPL | Hydroponics - The Future Grows Here</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; width:100%; font-family:'Inter',sans-serif; color:#fff; background:#000; }
+    .bg-gif { position:fixed; inset:0; z-index:-3; background:url('https://login.skillizee.io/s/articles/693aa2e5633891699095c0ca/images/Gif 1.gif') center/cover no-repeat fixed; pointer-events:none; opacity:0.88; }
+    .entry-animation { position:fixed; inset:0; z-index:9999; background:#000; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+    .entry-animation img.gif { min-width:100%; min-height:100%; object-fit:cover; opacity:0; }
+    #startupFullscreenBtn { position:fixed; top:24px; right:24px; z-index:99999; width:70px; height:70px; background:rgba(68,124,89,0.96); border:5px solid #fff; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 12px 35px rgba(68,124,89,0.5),0 0 40px rgba(68,124,89,0.6),inset 0 0 25px rgba(255,255,255,0.4); backdrop-filter:blur(14px); transition:all .4s; animation:goldPulse 3.5s infinite; }
+    #startupFullscreenBtn:hover { transform:scale(1.22) rotate(10deg); box-shadow:0 20px 60px rgba(68,124,89,0.8),0 0 80px rgba(68,124,89,0.9); border-color:#000; }
+    #startupFullscreenBtn svg { width:40px; height:40px; stroke:#fff; filter:drop-shadow(0 3px 6px rgba(0,0,0,0.4)); }
+    @keyframes goldPulse { 0%,100% { box-shadow:0 12px 35px rgba(68,124,89,0.5),0 0 40px rgba(68,124,89,0.6),inset 0 0 25px rgba(255,255,255,0.4); } 50% { box-shadow:0 18px 50px rgba(68,124,89,0.7),0 0 60px rgba(68,124,89,0.8),inset 0 0 30px rgba(255,255,255,0.5); } }
+    .glass { background:rgba(202,237,237,.9); backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,.6); border-radius:3rem; }
+    .glass-dark { background:rgba(28,38,40,.97); backdrop-filter:blur(22px); border:1px solid #BADD7F; border-radius:3rem; color:#FEFAE0; }
+    .content-card { background:#FEFAE0; color:#1C2628; border-radius:3rem; padding:3rem; box-shadow:0 30px 80px rgba(56,102,65,0.25); border:3px solid #386641; }
+    section { padding:4rem 1.5rem; }
+    .timeline-container { max-width:1100px; margin:1rem auto; position:relative; padding:1rem 0; opacity:0; }
+    .timeline-container::before { content:''; position:absolute; top:0; bottom:0; left:50%; width:6px; background:#BADD7F; transform:translateX(-50%); border-radius:3px; box-shadow:0 0 25px #BADD7F; }
+    .timeline-item { margin:4rem 0; width:50%; position:relative; }
+    .timeline-item.left { left:0; }
+    .timeline-item.right { left:50%; }
+    .timeline-content { background:rgba(47,77,46,0.85); backdrop-filter:blur(18px); border:2px solid #BADD7F; border-radius:1.5rem; padding:2rem; box-shadow:0 15px 40px rgba(0,0,0,0.6); transition:all .4s; cursor:pointer; }
+    .timeline-content:hover { transform:translateY(-12px); box-shadow:0 30px 70px rgba(186,221,127,0.5); }
+    .timeline-content::before { content:''; position:absolute; top:2rem; width:0; height:0; border:18px solid transparent; }
+    .left .timeline-content::before { right:-36px; border-left-color:#BADD7F; }
+    .right .timeline-content::before { left:-36px; border-right-color:#BADD7F; }
+    .timeline-dot { width:32px; height:32px; background:#2F4D2E; border:7px solid #BADD7F; border-radius:50%; position:absolute; top:2rem; z-index:10; box-shadow:0 0 35px #BADD7F; }
+    .left .timeline-dot { right:-73px; }
+    .right .timeline-dot { left:-73px; }
+    .module-title { font-size:28px; font-weight:900; color:#FEFAE0; margin-bottom:1rem; text-shadow:0 4px 15px rgba(0,0,0,0.8); }
+    .chapters { margin-top:1.5rem; display:none; opacity:0; transition:opacity .6s; }
+    .chapters.show { display:block; opacity:1; }
+    .chapter-item { padding:0.8rem 0; font-size:1.1rem; border-bottom:1px dashed rgba(186,221,127,0.4); cursor:pointer; transition:all .3s; color:#e2e8f0; }
+    .chapter-item:hover { color:#BADD7F; transform:translateX(8px); }
+    .chapter-explanation { display:none; margin-top:0.5rem; font-size:1rem; color:#d1d5db; padding:0.75rem; background:rgba(255,255,255,0.08); border-radius:0.5rem; }
+    :root { --neon-cyan: #00f2ff; --neon-green: #39ff14; --dark-bg: #0a0b10; --panel-bg: #161b22; --border-color: #ffffff00; }
+    .hub-container { position:relative; width:100px; height:100px; margin:20px auto; background:var(--panel-bg); border:2px solid var(--neon-cyan); border-radius:15px; display:flex; justify-content:center; align-items:center; box-shadow:0 0 20px rgba(0,242,255,0.2); z-index:20; }
+    .hub-icon img { width:60px; height:60px; filter:drop-shadow(0 0 5px var(--neon-cyan)); }
+    .connections-svg { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:5; }
+    .connector-line { fill:none; stroke:var(--border-color); stroke-width:2; transition:stroke 0.3s, stroke-width 0.3s; }
+    .connector-line.active { stroke:var(--neon-green); stroke-width:3; }
+    .pulse-circle { fill:var(--neon-green); visibility:hidden; }
+    .active .pulse-circle { visibility:visible; }
+    .module-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px 40px; margin-top:50px; }
+    .module-card { background:var(--panel-bg); border:1px solid var(--border-color); padding:20px; border-radius:8px; cursor:pointer; transition:all 0.3s ease; text-align:center; font-weight:500; font-size:0.95rem; min-height:60px; }
+    .module-card:hover { border-color:var(--neon-cyan); background:#1c2128; transform:translateY(-5px); }
+    .module-card.active { border-color:var(--neon-green); box-shadow:0 0 15px rgba(57,255,20,0.2); color:var(--neon-green); }
+    .module-card::before { content:''; position:absolute; top:-30px; left:50%; width:8px; height:8px; background:var(--border-color); border-radius:50%; transform:translateX(-50%); }
+    .module-card.active::before { background:var(--neon-green); box-shadow:0 0 8px var(--neon-green); }
+    footer {
+      background: rgba(28,38,40,0.97);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid #BADD7F;
+      padding: 3rem 2rem;
+      text-align: center;
+      color: #d1d5db;
+    }
+    footer .logo { display: flex; justify-content: center; margin-bottom: 1.5rem; }
+    footer .logo img { max-width: 280px; height: auto; }
+    footer .brand-slogan { font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem; color: #CAEDED; }
+    footer .social-links a { color: #BADD7F; margin: 0 1rem; font-weight: 500; text-decoration: none; transition: color 0.3s; }
+    footer .social-links a:hover { color: #FEFAE0; }
+    footer .contact-info { margin: 1.5rem 0; font-size: 1rem; }
+    footer .copyright { font-size: 0.95rem; opacity: 0.8; margin-top: 1rem; }
+    @media (max-width:768px) { 
+      .module-grid { grid-template-columns:1fr; } 
+      .timeline-item, .timeline-item.right, .timeline-item.left { width:100%; left:0 !important; } 
+      .timeline-container::before { left:40px; } 
+      .left .timeline-dot, .right .timeline-dot { left:8px !important; right:auto; } 
+      .left .timeline-content::before, .right .timeline-content::before { left:-36px !important; right:auto; border-left-color:transparent !important; border-right-color:#BADD7F !important; }
+      footer { padding: 2.5rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Entry Animation -->
+  <div class="entry-animation">
+    <img alt="Entry Animation" class="gif" src="https://login.skillizee.io/s/articles/69410a107133c05624f6cd5c/images/EntryGifFinalRed.gif" />
+    <audio id="entryMusic2" preload="auto">
+      <source src="https://chirag-gour.github.io/Audio_SkilliZee/Img%20Hydroponics/Hydroponics%20Entry%20-%201.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+
+  <!-- Background GIF -->
+  <div class="bg-gif"></div>
+
+  <!-- Fullscreen Button -->
+  <div id="startupFullscreenBtn" title="Toggle Fullscreen">
+    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" viewBox="0 0 24 24">
+      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+    </svg>
+  </div>
+
+  <!-- HERO -->
+  <header class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
+    <div class="glass absolute inset-0"></div>
+    <div class="relative z-10 max-w-6xl mx-auto flex flex-col items-center">
+      <img alt="Logo" class="w-64 md:w-80 h-auto object-contain drop-shadow-2xl mb-6" src="https://login.skillizee.io/s/articles/6944feb3839c9b2329ce8fe7/images/Loghydro.png" />
+      <h1 class="font-black leading-tight text-5xl md:text-7xl">
+        <span class="text-[#386641]">SBPL | Hydroponics</span>
+      </h1>
+      <h2 class="mt-6 font-black text-[#FEFAE0] drop-shadow-2xl text-4xl md:text-6xl">The Future Grows Here</h2>
+      <p class="mt-8 font-bold text-[#386641] text-2xl md:text-4xl opacity-95">
+        Skill-Based Project Learning – The Complete Roadmap
+      </p>
+    </div>
+  </header>
+
+  <!-- WELCOME -->
+  <section class="py-20 px-6 bg-black/60">
+    <div class="max-w-5xl mx-auto content-card text-center">
+      <h2 class="font-black mb-10 text-[#386641] text-4xl md:text-5xl">Welcome to Hands-On Hydroponics!</h2>
+      <p class="leading-relaxed text-[#1C2628] text-lg md:text-xl">This SBPL will guide you step-by-step to build, maintain, and grow in your own hydroponic system — no soil, just water, nutrients, and innovation.</p>
+    </div>
+  </section>
+
+  <!-- WHAT YOU’LL MASTER -->
+  <section class="py-20 px-6">
+    <div class="max-w-6xl mx-auto glass-dark rounded-3xl p-8 md:p-16 text-center">
+      <h2 class="font-black mb-12 text-[#FEFAE0] text-4xl md:text-5xl">What You’ll Master</h2>
+      <img alt="Hydroponic system with plants growing without soil" class="w-full max-w-4xl mx-auto rounded-2xl mb-12 shadow-2xl" src="https://manoa.hawaii.edu/sealearning/sites/default/files/5LS_Hydro_Roots_Phenom.jpg" />
+
+      <div class="hub-container" id="main-hub">
+        <span class="hub-icon"><img src="https://cdn-icons-png.flaticon.com/512/3227/3227829.png" alt="Central Hub" /></span>
+      </div>
+
+      <div class="relative">
+        <svg class="connections-svg" id="svg-layer"></svg>
+        <div class="module-grid" id="module-grid">
+          <div class="module-card" data-id="0">Science of soilless cultivation</div>
+          <div class="module-card" data-id="1">Sustainable water use</div>
+          <div class="module-card" data-id="2">Building different hydroponic systems</div>
+          <div class="module-card" data-id="3">Organic liquid manure preparation</div>
+          <div class="module-card" data-id="4">Nutrient management & pH control</div>
+          <div class="module-card" data-id="5">Hands-on tools and testing</div>
+          <div class="module-card" data-id="6">Monitoring and troubleshooting</div>
+          <div class="module-card" data-id="7">Real capstone projects</div>
+          <div class="module-card" data-id="8">Growing microgreens & leafy greens</div>
+          <div class="module-card" data-id="9">Future-ready farming skills</div>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-10 mt-16">
+        <div>
+          <img alt="Hydroponic microgreens in tray" class="w-full rounded-2xl shadow-xl" src="http://static1.squarespace.com/static/54ec7e4fe4b0866fef062b8b/551c1f45e4b0c9df65c192db/62d05fdabca1a975a8b19ea3/1757435661750/IMG_2419+Large.jpeg?format=1500w" />
+          <p class="text-sm mt-4 text-gray-300">Growing microgreens hydroponically</p>
+        </div>
+        <div>
+          <img alt="Leafy greens like lettuce in NFT hydroponic system" class="w-full rounded-2xl shadow-xl" src="https://assets.echocommunity.org/images/3effb17f-d76b-4e58-8df4-9d19ab085d18/wan1-figure-11_md.JPG" />
+          <p class="text-sm mt-4 text-gray-300">Leafy greens in NFT hydroponic setup</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-10 mt-12">
+        <div>
+          <img alt="Organic liquid fertilizer preparation" class="w-full rounded-2xl shadow-xl" src="https://gpnmag.com/wp-content/uploads/2016/10/Fig2-Lettuce-NFT.jpg" />
+          <p class="text-sm mt-4 text-gray-300">Preparing organic liquid manure</p>
+        </div>
+        <div>
+          <img alt="Hydroponic monitoring tools pH and EC meters" class="w-full rounded-2xl shadow-xl" src="https://www.greengenius.com.au/cdn/shop/articles/67f623243913c6d833412d82-1744185374338_08e0e781-85d3-4cf9-88e0-9e44c28ca115.jpg?v=1744439123&width=1920" />
+          <p class="text-sm mt-4 text-gray-300">Hands-on monitoring tools (pH & EC)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="py-20 px-6 bg-black/60">
+    <div class="max-w-5xl mx-auto text-center mb-12">
+      <div class="glass rounded-3xl p-10">
+        <h2 class="font-black mb-6 text-[#386641] text-4xl md:text-5xl">Your 4-Module Journey + Capstone</h2>
+        <p class="font-bold text-[#BADD7F] text-2xl md:text-3xl">Click on each module to explore chapters</p>
+      </div>
+    </div>
+
+    <div class="timeline-container">
+      <div class="timeline-item left">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content glass-dark" onclick="this.querySelector('.chapters').classList.toggle('show')">
+          <h3 class="module-title">Module 1: The Science of Soilless Growth</h3>
+          <div class="chapters">
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">Overview<div class="chapter-explanation">Introduction to the fundamentals of hydroponics</div></div>
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">1.1 - Soil VS Water - The Big Difference<div class="chapter-explanation">Understand why plants can thrive without soil and the advantages of hydroponics</div></div>
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">1.2 - Plant Food (N-P-K): What Plants Really Eat<div class="chapter-explanation">Learn essential nutrients and how to deliver them directly in water</div></div>
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">1.3 - The pH Puzzle : Keeping The Water Happy<div class="chapter-explanation">Master pH balance for optimal nutrient uptake</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item right">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content glass-dark" onclick="this.querySelector('.chapters').classList.toggle('show')">
+          <h3 class="module-title">Module 2: Building Your System</h3>
+          <div class="chapters">
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">2.1 - Components of Hydroponics<div class="chapter-explanation">Reservoirs, pumps, grow media — everything you need</div></div>
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">2.2 - Types Of Hydroponics<div class="chapter-explanation">Wick, Kratky, NFT, Drip — choose the best for your project</div></div>
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">2.3 - Design Challenge : Space & Light<div class="chapter-explanation">Optimize layout and lighting for urban or indoor growing</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item left">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content glass-dark" onclick="this.querySelector('.chapters').classList.toggle('show')">
+          <h3 class="module-title">Module 3: Maintenance and Efficiency</h3>
+          <div class="chapters">
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">3.1 - Monitoring Magic: Tools and Testing<div class="chapter-explanation">EC, pH meters, and daily checks for healthy plants</div></div>
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">3.2 - Water Wisdom<div class="chapter-explanation">Changing solutions, oxygenation, and preventing issues</div></div>
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">3.3 - Sustainable Growth<div class="chapter-explanation">Water recycling and eco-friendly practices</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item right">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content glass-dark" onclick="this.querySelector('.chapters').classList.toggle('show')">
+          <h3 class="module-title">Module 4: Growing Plants Without Soil</h3>
+          <div class="chapters">
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">4.1 - Understanding Essential Growth Conditions<div class="chapter-explanation">Light, temperature, and humidity for thriving plants</div></div>
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">4.2 - Growing Healthy Microgreens<div class="chapter-explanation">Fast, nutrient-packed crops perfect for beginners</div></div>
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">4.3 - Setting Up A Simple Hydroponic Unit<div class="chapter-explanation">Build your first working system step-by-step</div></div>
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">4.4 - Preparing Liquid Organic Manure<div class="chapter-explanation">Natural, organic nutrient solutions</div></div>
+            <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show'); event.stopPropagation();">4.5 - Monitoring & Maintaining pH Levels<div class="chapter-explanation">Keep your system balanced for maximum growth</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item left">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content glass-dark">
+          <h3 class="module-title">Final Capstone Project</h3>
+          <div class="chapters show">
+            <div class="chapter-item">Project 1: Design and build a complete hydroponic system</div>
+            <div class="chapter-item">Project 2: Grow, harvest, and document a full crop cycle</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="py-24 px-6 text-center">
+    <div class="max-w-5xl mx-auto glass-dark rounded-3xl p-16 md:p-24">
+      <h2 class="font-black mb-8 text-[#FEFAE0] text-4xl md:text-5xl">Ready to Grow the Future?</h2>
+      <p class="text-[#CAEDED] text-2xl md:text-3xl drop-shadow-2xl">Start Your SBPL Hydroponics Journey Now.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="logo">
+      <img src="https://storage.googleapis.com/skillizee-io.firebasestorage.app/images/logos/skillizee-white-logo.png" alt="SkilliZee Logo">
+    </div>
+    <p class="brand-slogan">Empowering Skills for Tomorrow's World</p>
+    <div class="social-links">
+      <a href="https://facebook.com/skillizee">Facebook</a>
+      <a href="https://instagram.com/skillizee">Instagram</a>
+      <a href="https://linkedin.com/company/skillizee">LinkedIn</a>
+    </div>
+    <div class="contact-info">
+      <p>Email: pm@skillizee.io | Phone: +91-7597318172 | Website: www.skillizee.io</p>
+    </div>
+    <p class="copyright">© 2026 SkilliZee. All rights reserved. | Hydroponics SBPL Course</p>
+  </footer>
+
+  <script>
+    // Entry Animation
+    const gif = document.querySelector('.entry-animation img.gif');
+    const audio2 = document.getElementById('entryMusic2');
+    const entry = document.querySelector('.entry-animation');
+    if (audio2) { audio2.volume = 0.8; audio2.play().catch(() => {}); }
+    gsap.timeline({
+      onComplete: () => {
+        entry.remove();
+        document.body.style.overflowY = 'auto';
+        gsap.to("header", {opacity:1, duration:1.5, ease:"power2.out"});
+        gsap.to(".timeline-container", {opacity:1, duration:1.5, delay:0.3});
+      }
+    })
+    .to(gif, {opacity:1, duration:1.2}, 0.4)
+    .to({}, {duration:5})
+    .to(gif, {opacity:0, duration:1.2});
+
+    // Fullscreen Toggle
+    document.getElementById('startupFullscreenBtn').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(()=>{});
+      } else {
+        document.exitFullscreen().catch(()=>{});
+      }
+    });
+
+    // Module grid connection lines
+    const hub = document.getElementById('main-hub');
+    const svg = document.getElementById('svg-layer');
+    const cards = document.querySelectorAll('.module-card');
+
+    function drawLines() {
+      if (!hub || !svg) return;
+      svg.innerHTML = '';
+      const hubRect = hub.getBoundingClientRect();
+      const svgRect = svg.getBoundingClientRect();
+      const startX = (hubRect.left + hubRect.width / 2) - svgRect.left;
+      const startY = hubRect.bottom - svgRect.top;
+
+      cards.forEach((card, i) => {
+        const cardRect = card.getBoundingClientRect();
+        const endX = (cardRect.left + cardRect.width / 2) - svgRect.left;
+        const endY = cardRect.top - svgRect.top - 20;
+        const midY = startY + (endY - startY) / 2;
+        const pathData = `M ${startX} ${startY} L ${startX} ${midY} L ${endX} ${midY} L ${endX} ${endY}`;
+
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", pathData);
+        path.setAttribute("class", "connector-line");
+        path.setAttribute("id", `line-${i}`);
+
+        const pulse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        pulse.setAttribute("r", "4");
+        pulse.setAttribute("class", "pulse-circle");
+        const anim = document.createElementNS("http://www.w3.org/2000/svg", "animateMotion");
+        anim.setAttribute("dur", "1.5s");
+        anim.setAttribute("repeatCount", "indefinite");
+        anim.setAttribute("path", pathData);
+        pulse.appendChild(anim);
+
+        svg.appendChild(path);
+        svg.appendChild(pulse);
+      });
+    }
+
+    function setActive(id) {
+      cards.forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.connector-line').forEach(l => l.classList.remove('active'));
+      document.querySelectorAll('.pulse-circle').forEach(p => { if (p.parentElement) p.parentElement.classList.remove('active'); });
+
+      const card = cards[id];
+      if (card) card.classList.add('active');
+      const line = document.getElementById(`line-${id}`);
+      if (line) {
+        line.classList.add('active');
+        if (line.nextElementSibling) line.nextElementSibling.classList.add('active');
+      }
+    }
+
+    cards.forEach((card, i) => card.addEventListener('click', () => setActive(i)));
+
+    window.addEventListener('load', drawLines);
+    window.addEventListener('resize', drawLines);
+    setTimeout(drawLines, 500);
+  </script>
+</body>
+</html>
