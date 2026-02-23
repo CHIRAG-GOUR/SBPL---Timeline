@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speak Smart Lab | SkilliZee</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --black: #000000;
+            --navy: #1F3345;
+            --red: #B54745;
+            --gold: #C78F57;
+            --sea-green: #85ABAB;
+            --beige: #F0EDE5;
+        }
+
+        body {
+            font-family: 'Nunito', system-ui, sans-serif;
+            color: var(--navy);
+            background-color: var(--beige);
+            background-image: linear-gradient(rgba(240, 237, 229, 0.82), rgba(240, 237, 229, 0.82)),
+                url('https://login.skillizee.io/s/articles/6979d198605592679b65e30c/images/OverviewBgGif.gif');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            min-height: 100vh;
+            line-height: 1.65;
+            font-size: 18px;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Baloo 2', cursive;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .title-card {
+            background: var(--gold);
+            border-radius: 0 0 24px 24px;
+            box-shadow: 0 10px 30px rgba(31,51,69,0.18);
+            padding: 5.5rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .title-card h1 {
+            font-size: clamp(48px, 8vw, 72px);
+            color: white;
+        }
+
+        .title-card p {
+            font-size: 2.25rem;
+            color: white;
+            opacity: 0.9;
+            margin-top: 1.25rem;
+        }
+
+        .content-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(31,51,69,0.12);
+            margin-bottom: 2.5rem;
+        }
+
+        .module-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .chapter-item {
+            font-size: 18px;
+            padding: 0.8rem 0;
+            border-bottom: 1px dashed rgba(199,143,87,0.4);
+            cursor: pointer;
+            transition: all .3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chapter-item:hover {
+            color: var(--gold);
+            transform: translateX(8px);
+        }
+
+        .chapter-item .arrow {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .chapter-explanation {
+            display: none;
+            margin-top: 0.5rem;
+            padding: 0.8rem;
+            background: rgba(0,0,0,0.04);
+            border-radius: 0.6rem;
+            font-size: 18px;
+            color: #444;
+        }
+
+        .chapter-explanation.show {
+            display: block;
+        }
+
+        .benefit-item, p, li, .text-xl {
+            font-size: 18px;
+        }
+
+        .module-card {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .timeline-container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            position: relative;
+            padding: 1rem 0;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 6px;
+            background: var(--gold);
+            transform: translateX(-50%);
+            border-radius: 3px;
+        }
+
+        .timeline-item {
+            margin: 3rem 0;
+            width: 50%;
+            position: relative;
+        }
+
+        .timeline-item.left { left: 0; }
+        .timeline-item.right { left: 50%; }
+
+        .timeline-content {
+            background: rgba(133,171,171,0.15);
+            border: 2px solid var(--sea-green);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(31,51,69,0.12);
+            transition: all .4s;
+            cursor: pointer;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(199,143,87,0.3);
+        }
+
+        .chapters {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .chapters.show {
+            display: block;
+        }
+
+        .final-card {
+            max-width: 900px;
+            margin: 4rem auto 3rem;
+            padding: 4rem 2.5rem;
+            text-align: center;
+            background: white;
+            border-radius: 22px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 18px 45px rgba(31,51,69,0.18);
+        }
+
+        .final-text {
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(32px, 6vw, 52px);
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        #entryOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1.5s ease-out;
+            opacity: 1;
+        }
+
+        #entryOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #introVideo {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        #startButton {
+            position: relative;
+            z-index: 10000;
+            padding: 1.2rem 3.5rem;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            background: var(--gold);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 35px rgba(199,143,87,0.6);
+            transition: all 0.3s;
+        }
+
+        #startButton:hover {
+            background: var(--sea-green);
+            transform: scale(1.08);
+        }
+    </style>
+</head>
+<body>
+
+<div id="entryOverlay">
+    <video id="introVideo" playsinline preload="auto">
+        <source src="https://chirag-gour.github.io/Audio_SkilliZee/Animation%20&amp;%20Games/Intro%20crop.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+    </video>
+
+    <button id="startButton">Let's Explore</button>
+</div>
+
+<button class="fixed top-4 right-4 bg-[var(--gold)] p-3 rounded-full shadow-lg hover:bg-[var(--red)] transition z-50 text-white" id="fullscreenBtn" title="Toggle Fullscreen">
+    <svg fill="none" height="28" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="28">
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <polyline points="9 21 3 21 3 15"></polyline>
+        <line x1="21" x2="14" y1="3" y2="10"></line>
+        <line x1="3" x2="10" y1="21" y2="14"></line>
+    </svg>
+</button>
+
+<div class="title-card">
+    <h1>Speak Smart Lab</h1>
+    <p>Master Public Speaking: From Fear to Confidence</p>
+</div>
+
+<main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
+
+    <div class="content-card text-center">
+        <h2 style="font-size:3.2rem; color:var(--navy);">Welcome to Speak Smart Lab!</h2>
+        <p class="text-xl leading-relaxed mt-6">
+            Overcome stage fright, craft powerful messages, deliver with confidence, and handle any Q&A like a pro. 
+            This course transforms anxiety into authentic presence - perfect for students, professionals, and aspiring speakers.
+        </p>
+        <div class="benefit-list mt-8 space-y-3">
+            <div class="benefit-item">Understand the science of anxiety and reframe it as excitement</div>
+            <div class="benefit-item">Build clear, story-driven, memorable messages</div>
+            <div class="benefit-item">Master voice, body language, eye contact & stage presence</div>
+            <div class="benefit-item">Design clean visuals and rehearse professionally</div>
+            <div class="benefit-item">Handle tough questions, surprises, and technical issues calmly</div>
+            <div class="benefit-item font-semibold" style="color:var(--gold);">
+                Complete capstone speech + personalized feedback → earn your certificate!
+            </div>
+        </div>
+    </div>
+
+    <div class="content-card text-center">
+        <h2 style="font-size:3rem; color:var(--navy); margin-bottom:2rem;">What You’ll Master</h2>
+        <img alt="Speak Smart Lab Logo" src="https://login.skillizee.io/s/articles/6979d198605592679b65e30c/images/Logo 5 nobg.png"
+             style="width: 250px; height: 250px; object-fit: contain; margin: 0 auto 3rem; display: block;" />
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div class="module-card p-6 text-left">
+                <h3 style="font-size:24px; color:var(--navy); margin-bottom:1rem;">Module 1: Conquering Anxiety & Building Confidence</h3>
+                <ul class="module-pointers mt-4 space-y-2">
+                    <li>Learn the science behind stage fright and how your body reacts</li>
+                    <li>Use mind & body techniques to transform nerves into energy</li>
+                    <li>Overcome the spotlight effect and read any audience</li>
+                </ul>
+            </div>
+            <div class="module-card p-6 text-left">
+                <h3 style="font-size:24px; color:var(--navy); margin-bottom:1rem;">Module 2: Crafting Your Message</h3>
+                <ul class="module-pointers mt-4 space-y-2">
+                    <li>Define one unforgettable core message</li>
+                    <li>Harness storytelling to emotionally connect</li>
+                    <li>Master the Hook → Problem → Insight → Call to Action structure</li>
+                </ul>
+            </div>
+            <div class="module-card p-6 text-left">
+                <h3 style="font-size:24px; color:var(--navy); margin-bottom:1rem;">Module 3: Mastering Delivery & Body Language</h3>
+                <ul class="module-pointers mt-4 space-y-2">
+                    <li>Develop vocal control: pace, volume, pauses, tone</li>
+                    <li>Use open, purposeful body language & gestures</li>
+                    <li>Build real connection through eye contact & presence</li>
+                </ul>
+            </div>
+            <div class="module-card p-6 text-left">
+                <h3 style="font-size:24px; color:var(--navy); margin-bottom:1rem;">Module 4: Presentation Design, Practice & Q&A</h3>
+                <ul class="module-pointers mt-4 space-y-2">
+                    <li>Create clean, powerful supporting visuals</li>
+                    <li>Rehearse professionally with timed feedback</li>
+                    <li>Handle questions, surprises & technical issues gracefully</li>
+                </ul>
+            </div>
+            <div class="module-card p-6 text-left">
+                <h3 style="font-size:24px; color:var(--navy); margin-bottom:1rem;">Module 5: Final Capstone Speech</h3>
+                <ul class="module-pointers mt-4 space-y-2">
+                    <li>Deliver a complete, polished public speech</li>
+                    <li>Receive detailed, personalized mentor feedback</li>
+                    <li>Graduate confident and ready for any speaking opportunity</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2 style="font-size:3rem; color:var(--navy); text-align:center; margin-bottom:1.5rem;">Your 5-Module Journey</h2>
+        <p class="text-center text-xl mb-8">Click on a module to explore its chapters and detailed content.</p>
+        <div class="timeline-container">
+
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <h3 class="module-title">Module 1: Conquering Anxiety & Building Confidence</h3>
+                    <div class="chapters">
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> Overview
+                            <div class="chapter-explanation">Learn why stage fright happens and how to turn fear into strength.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 1.1 - The Science of Stage Fright
+                            <div class="chapter-explanation">Understand glossophobia, fight-or-flight response, and physical symptoms.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 1.2 - Mind/Body Prep Techniques
+                            <div class="chapter-explanation">Use breathing, reframing, power poses, and physiological sigh to calm nerves.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 1.3 - Audience & Environment Analysis
+                            <div class="chapter-explanation">Overcome spotlight effect and prepare for different audiences and settings.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 1.3 - Activity
+                            <div class="chapter-explanation">Complete anxiety journal and create personal reframing statements.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <h3 class="module-title">Module 2: Crafting Your Message</h3>
+                    <div class="chapters">
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 2.1 - Defining Your Core Message
+                            <div class="chapter-explanation">Identify the single most important idea your audience will remember.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 2.1 - Quick Activity
+                            <div class="chapter-explanation">Write your entire talk condensed into one powerful sentence.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 2.2 - The Power of Story
+                            <div class="chapter-explanation">Use personal, relatable stories to emotionally engage your listeners.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 2.3 - The Essential Structure That Never Fails
+                            <div class="chapter-explanation">Master the proven Hook → Problem → Solution/Insight → Call to Action flow.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <h3 class="module-title">Module 3: Mastering Delivery & Body Language</h3>
+                    <div class="chapters">
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 3.1 - Vocal Toolbox
+                            <div class="chapter-explanation">Control pace, volume, pauses, tone variation, and eliminate filler words.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 3.2 - Intentional Body Language
+                            <div class="chapter-explanation">Use open posture, purposeful gestures, and confident movement on stage.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 3.3 - Eye Contact and Connection
+                            <div class="chapter-explanation">Apply the 3-second rule and scan pattern to build real audience connection.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> Experiential Activity - Interactive Mirror & AI Review
+                            <div class="chapter-explanation">Record your delivery and analyze voice, body, and presence with AI feedback.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <h3 class="module-title">Module 4: Presentation Design, Practice & Q&A</h3>
+                    <div class="chapters">
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 4.1 - Designing Effective Visuals
+                            <div class="chapter-explanation">Create clean slides with minimal text, strong images, and good contrast.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 4.2 - Rehearsal and Feedback
+                            <div class="chapter-explanation">Do multiple timed rehearsals and get constructive feedback from others.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 4.2 - Activity
+                            <div class="chapter-explanation">Record a full practice run and review your performance critically.</div>
+                        </div>
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 4.3 - Handling The Unpredictable
+                            <div class="chapter-explanation">Stay calm during tough questions, tech failures, or unexpected interruptions.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <h3 class="module-title">Module 5: Final Capstone Speech</h3>
+                    <div class="chapters">
+                        <div class="chapter-item" onclick="this.querySelector('.chapter-explanation').classList.toggle('show')">
+                            <img alt="Arrow" class="arrow" src="https://login.skillizee.io/s/articles/6979f16a57e6506603870115/images/green-arrow.gif" /> 5.1 - Final Speech + Mentor Feedback
+                            <div class="chapter-explanation">Deliver your complete polished speech and receive detailed mentor review.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2 style="font-size:2.8rem; color:var(--navy); text-align:center; margin-bottom:1.5rem;">About Speak Smart Lab & SkilliZee</h2>
+        <p class="text-xl leading-relaxed mb-6">
+            Speak Smart Lab is a complete, practical public speaking course designed to take you from nervous beginner to confident presenter in a structured, step-by-step way. 
+            You’ll build real skills through science-backed techniques, storytelling mastery, professional delivery practice, and a final capstone speech with personalized feedback.
+        </p>
+        <p class="text-xl leading-relaxed mb-6">
+            Created by SkilliZee - a platform dedicated to empowering tomorrow’s leaders with future-ready skills. Whether you're preparing for college presentations, job interviews, TED-style talks, corporate pitches, or simply want to express yourself with more impact, Speak Smart Lab gives you the tools, confidence, and certificate to prove it.
+        </p>
+    </div>
+
+    <div class="final-card">
+        <p class="final-text">Ready to Turn <span style="color:var(--gold);">Nerves into Power</span>?</p>
+        <p style="font-size:2.2rem; color:var(--navy); margin-top:1rem;">Start Your Speak Smart Journey Now!</p>
+    </div>
+
+</main>
+
+<footer style="margin-top:4rem; padding:3rem 2rem; text-align:center; background:rgba(31,51,69,0.92); color:#f0ede5;">
+    <div style="display:flex; justify-content:center; margin-bottom:1.5rem;">
+        <img src="https://storage.googleapis.com/skillizee-io.firebasestorage.app/images/logos/skillizee-white-logo.png" alt="SkilliZee Logo" style="width:300px;">
+    </div>
+    <p class="text-xl mb-4">Empowering Skills for Tomorrow's World</p>
+    <div class="mb-6">
+        <a href="https://facebook.com/skillizee" style="margin:0 1.5rem; color:#f0ede5; text-decoration:none;">Facebook</a>
+        <a href="https://instagram.com/skillizee" style="margin:0 1.5rem; color:#f0ede5; text-decoration:none;">Instagram</a>
+        <a href="https://linkedin.com/company/skillizee" style="margin:0 1.5rem; color:#f0ede5; text-decoration:none;">LinkedIn</a>
+    </div>
+    <p style="font-size:1.1rem;">Email: pm@skillizee.io | Phone: +91-7597318172 | Website: www.skillizee.io</p>
+    <p style="margin-top:1.5rem; opacity:0.9;">© 2026 SkilliZee. All rights reserved. | Speak Smart Lab Course</p>
+</footer>
+
+<script>
+// Fullscreen toggle
+document.getElementById('fullscreenBtn').addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+    } else {
+        document.exitFullscreen();
+    }
+});
+
+// Intro video + button logic
+const entryOverlay = document.getElementById('entryOverlay');
+const introVideo = document.getElementById('introVideo');
+const startButton = document.getElementById('startButton');
+
+// Start video on button click – keep overlay until video ends
+startButton.addEventListener('click', () => {
+    startButton.style.display = 'none';
+    introVideo.currentTime = 0;
+    introVideo.volume = 0.85;
+    introVideo.play().catch(err => {
+        console.log("Play failed:", err);
+        setTimeout(() => introVideo.play(), 300);
+    });
+});
+
+// Hide overlay when video finishes
+introVideo.addEventListener('ended', () => {
+    entryOverlay.classList.add('hidden');
+});
+
+// Fallback timeout (in case video doesn't fire 'ended')
+setTimeout(() => {
+    if (!entryOverlay.classList.contains('hidden')) {
+        entryOverlay.classList.add('hidden');
+    }
+}, 45000);
+
+// Timeline toggle
+document.querySelectorAll('.timeline-content').forEach(item => {
+    item.addEventListener('click', function(e) {
+        if (!e.target.closest('.chapter-item')) {
+            this.querySelector('.chapters').classList.toggle('show');
+        }
+    });
+});
+
+document.querySelectorAll('.chapter-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+        e.stopPropagation();
+        this.querySelector('.chapter-explanation').classList.toggle('show');
+    });
+});
+</script>
+
+</body>
+</html>
