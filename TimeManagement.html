@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Time Boss Project • Own Your Clock! • Skillizee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --focus-teal:    #015959;
+      --calm-canvas:   #FFF8E5;
+      --action-orange: #F95D00;
+      --energy-gold:   #FBC117;
+      --fresh-flow:    #29B3B6;
+      --text-dark:     #0d2b2b;
+      --shadow:        0 12px 32px rgba(1,89,89,0.18);
+      --timeline-line: #bdbdbd;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--calm-canvas);
+      color: var(--text-dark);
+      line-height: 1.72;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    #diary-bg {
+      position: fixed;
+      inset: 0;
+      background: url('https://login.skillizee.io/s/articles/699bfb41fe1c9b7208a0a0c4/images/Bggif.gif') center/cover no-repeat fixed;
+      opacity: 1;
+      z-index: -2;
+    }
+    #diary-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255,248,229,0.58);
+      z-index: -1;
+    }
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 20px;
+      flex: 1;
+      position: relative;
+      z-index: 2;
+    }
+    /* Progress */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 6px;
+      width: 0%;
+      background: rgba(41,179,182,0.2);
+      z-index: 1001;
+      transition: width 0.2s ease-out;
+    }
+    #progress-bar.active {
+      background: linear-gradient(90deg, var(--fresh-flow), var(--energy-gold));
+    }
+    #progress-icon {
+      position: fixed;
+      top: -28px;
+      left: 0%;
+      z-index: 1002;
+      transition: left 0.2s ease-out;
+    }
+    #progress-icon img { width: 60px; height: auto; }
+    /* Intro Overlay + Start Button (smaller) */
+    #entryOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 1.2s;
+    }
+    #entryOverlay.hidden { opacity: 0; pointer-events: none; }
+    #introVideo { width: 100%; height: 100%; object-fit: cover; }
+    #startButton {
+      position: absolute;
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--focus-teal);
+      color: white;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 800;
+      padding: 0.8rem 2.8rem;
+      border: 5px solid var(--energy-gold);
+      border-radius: 999px;
+      box-shadow: 0 8px 0 var(--text-dark);
+      cursor: pointer;
+      transition: all 0.35s;
+      z-index: 10000;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    #startButton:hover {
+      background: var(--energy-gold);
+      color: var(--text-dark);
+      transform: translateX(-50%) scale(1.06);
+      box-shadow: 0 12px 0 var(--text-dark);
+    }
+    .post-video-hidden {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.2s ease;
+    }
+    #entryOverlay.hidden ~ .post-video-hidden {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, rgba(1,89,89,0.85) 0%, rgba(0,56,56,0.95) 100%),
+                  url('https://images.unsplash.com/photo-1506784983877-45594f9d6b0f?auto=format&fit=crop&q=85&w=1600') center/cover;
+      color: white;
+      padding: 7rem 2rem 5rem;
+      border-radius: 0 0 48px 48px;
+      margin-bottom: 3.5rem;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 9vw, 5.8rem);
+      font-weight: 900;
+      line-height: 1.08;
+      margin-bottom: 1.4rem;
+      text-shadow: 0 5px 22px rgba(0,0,0,0.6);
+    }
+    .hero p {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      max-width: 860px;
+      margin: 0 auto 2.5rem;
+      opacity: 0.95;
+    }
+    /* Cards & Titles */
+    .content-card {
+      background: white;
+      border-radius: 28px;
+      padding: 3rem 2.5rem;
+      margin-bottom: 4rem;
+      box-shadow: 0 12px 44px rgba(1,89,89,0.15);
+      border: 1px solid rgba(41,179,182,0.08);
+      transition: all 0.42s ease;
+    }
+    .content-card:hover {
+      transform: translateY(-14px);
+      box-shadow: 0 28px 80px rgba(1,89,89,0.26);
+    }
+    .main-title {
+      font-family: 'Playfair Display', serif;
+      text-align: center;
+      font-size: clamp(2.8rem, 7vw, 4.5rem);
+      font-weight: 900;
+      color: var(--focus-teal);
+      margin: 3.5rem 0 2.8rem;
+      position: relative;
+    }
+    .main-title::after {
+      content: "";
+      width: 160px;
+      height: 7px;
+      background: var(--energy-gold);
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 4px;
+    }
+    /* Vertical Timeline */
+    .timeline-wrapper {
+      position: relative;
+      padding: 2rem 0 5rem;
+    }
+    .timeline-line {
+      position: absolute;
+      top: 0; bottom: 0; left: 50%;
+      width: 5px;
+      background: linear-gradient(to bottom, var(--timeline-line), var(--fresh-flow));
+      transform: translateX(-50%);
+      border-radius: 5px;
+    }
+    .demo-card {
+      position: relative;
+      width: 100%;
+      max-width: 560px;
+      margin: 90px auto;
+      background: white;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 12px 42px rgba(1,89,89,0.16);
+      border: 1px solid rgba(41,179,182,0.1);
+    }
+    .demo-card:nth-child(odd)  { margin-left: 4%; }
+    .demo-card:nth-child(even) { margin-right: 4%; margin-left: auto; }
+    .head {
+      display: flex;
+      align-items: center;
+      padding: 1.9rem 2.4rem;
+      background: var(--focus-teal);
+      color: white;
+    }
+    .number-box {
+      min-width: 58px;
+      height: 58px;
+      background: var(--energy-gold);
+      color: var(--text-dark);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 900;
+      margin-right: 1.8rem;
+      box-shadow: 0 7px 20px rgba(0,0,0,0.3);
+    }
+    .head h2 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 800;
+    }
+    .body {
+      padding: 2.4rem;
+    }
+    .body ul {
+      list-style: none;
+      padding-left: 0;
+      font-size: 1.14rem;
+    }
+    .body ul li {
+      position: relative;
+      padding-left: 3.6rem;
+      margin-bottom: 1.1rem;
+    }
+    .body ul li::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 4px;
+      width: 48px;
+      height: 48px;
+      background: url('https://login.skillizee.io/s/articles/699bfb41fe1c9b7208a0a0c4/images/Pointers.gif') center/contain no-repeat;
+    }
+    /* Horizontal Journey – Numbers ONLY over boxes, permanent */
+    .journey-timeline-wrapper {
+      margin: 4.5rem 0 6.5rem;
+    }
+    .journey-timeline {
+      display: flex;
+      overflow-x: auto;
+      gap: 2.6rem;
+      padding: 3.5rem 1rem 4rem;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+    .journey-timeline::-webkit-scrollbar { display: none; }
+    .journey-panel {
+      flex: 0 0 480px;
+      min-height: 380px;
+      background: var(--focus-teal);
+      border-radius: 26px;
+      padding: 3.5rem 2.8rem 2.8rem;
+      box-shadow: 0 16px 52px rgba(1,89,89,0.3);
+      scroll-snap-align: start;
+      transition: all 0.4s;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.16);
+      position: relative;
+    }
+    .journey-panel:hover { transform: scale(1.04); }
+    .panel-number {
+      position: absolute;
+      top: -36px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--energy-gold);
+      color: var(--text-dark);
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.9rem;
+      font-weight: 900;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+      z-index: 2;
+      pointer-events: none;
+    }
+    .journey-panel h3 {
+      margin: 1.6rem 0 1.4rem;
+      font-size: 2.1rem;
+      font-weight: 800;
+    }
+    .journey-panel p {
+      font-size: 1.18rem;
+      line-height: 1.7;
+      opacity: 0.97;
+    }
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+    .arrow-btn {
+      background: var(--focus-teal);
+      color: white;
+      border: none;
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      font-size: 2.6rem;
+      cursor: pointer;
+      transition: all 0.35s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .arrow-btn:hover {
+      background: var(--fresh-flow);
+      transform: scale(1.15);
+    }
+    .dots {
+      display: flex;
+      gap: 1.6rem;
+    }
+    .dot {
+      width: 18px; height: 18px;
+      background: #ccc;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.35s;
+    }
+    .dot.active {
+      background: var(--energy-gold);
+      transform: scale(1.8);
+    }
+    /* Controls */
+    #fullscreen-btn {
+      position: fixed;
+      top: 24px; right: 24px;
+      z-index: 999999;
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s;
+      border: none;
+    }
+    #fullscreen-btn:hover { transform: scale(1.18) rotate(10deg); background: var(--fresh-flow); color: white; }
+    #back-to-top {
+      position: fixed;
+      bottom: 110px; left: 32px;
+      z-index: 10000;
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 12px 36px rgba(1,89,89,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.3rem;
+      color: var(--focus-teal);
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s;
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: auto; }
+    footer {
+      background: var(--focus-teal);
+      color: white;
+      text-align: center;
+      padding: 4rem 1rem 3rem;
+      margin-top: auto;
+      font-size: 1.1rem;
+      z-index: 2;
+    }
+    footer .logo img {
+      display: block;
+      margin: 0 auto 1.8rem;
+      max-width: 320px;
+    }
+    footer .social-links a {
+      color: var(--energy-gold);
+      margin: 0 1.5rem;
+      font-size: 1.4rem;
+      text-decoration: none;
+    }
+    footer .social-links a:hover { color: white; }
+  </style>
+</head>
+<body>
+
+<!-- Intro Video Overlay -->
+<div id="entryOverlay">
+  <video id="introVideo" playsinline preload="auto" muted>
+    <source src="https://chirag-gour.github.io/Audio_SkilliZee/Audio%20Chapters%20-%20Time%20Management/IntroCrop.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <button id="startButton">Let's Explore</button>
+</div>
+
+<!-- Floating Controls -->
+<button id="fullscreen-btn" title="Toggle Fullscreen">
+  <svg fill="none" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8 3H5C3.89543 3 3 3.89543 3 5V8M21 8V5C21 3.89543 20.1046 3 19 3H16M16 21H19C20.1046 21 21 20.1046 21 19V16M3 16V19C3 20.1046 3.89543 21 5 21H8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/>
+  </svg>
+</button>
+<button id="back-to-top" title="Back to Top">↑</button>
+
+<!-- Progress Elements -->
+<div id="progress-bar"></div>
+<div id="progress-icon"><img src="https://chirag-gour.github.io/Audio_SkilliZee/Ai%20Assistant%202/MenInWatch.gif" alt="Progress Icon"></div>
+
+<div id="diary-bg"></div>
+
+<div class="container post-video-hidden">
+
+  <section class="hero">
+    <h1>The Time Boss Project<br><span>Own Your Clock!</span></h1>
+    <p>Practical system to master your hours, crush procrastination,<br>and live with focus & energy — no burnout.</p>
+  </section>
+
+  <h1 class="main-title">Time Management Mastery</h1>
+
+  <div class="content-card text-center">
+    <p style="font-size:1.55rem; margin:1.8rem 0 2.2rem;">
+      Stop feeling like time controls you.<br>
+      Build habits & systems that let <strong>you</strong> control time.
+    </p>
+  </div>
+
+  <!-- What You'll Master – Vertical Timeline -->
+  <div class="content-card timeline-wrapper">
+    <h2 class="main-title" style="margin:1.5rem 0 3.5rem;">What You'll Master</h2>
+    <div class="timeline-line"></div>
+    <div class="demo-card">
+      <div class="head">
+        <div class="number-box">01</div>
+        <h2>Discover Your Time Reality</h2>
+      </div>
+      <div class="body">
+        <ul>
+          <li>The “no time” myth exposed</li>
+          <li>Energy vs Clock time – what really matters</li>
+          <li>Deep prioritization training</li>
+          <li>Activity: Eisenhower Matrix Workshop</li>
+          <li>Activity: The Time Auction Game</li>
+        </ul>
+      </div>
+    </div>
+    <div class="demo-card">
+      <div class="head">
+        <div class="number-box">02</div>
+        <h2>Build Your Productivity Arsenal</h2>
+      </div>
+      <div class="body">
+        <ul>
+          <li>Weekly macro planning system</li>
+          <li>Daily micro battle plan</li>
+          <li>Distraction elimination framework</li>
+          <li>Focusburst technique + practice</li>
+        </ul>
+      </div>
+    </div>
+    <div class="demo-card">
+      <div class="head">
+        <div class="number-box">03</div>
+        <h2>Launch & Sustain the Change</h2>
+      </div>
+      <div class="body">
+        <ul>
+          <li>Create your personal Time Playbook (AI-assisted)</li>
+          <li>Run the 7-Day Time Boss Challenge</li>
+          <li>Reflection & long-term adaptation system</li>
+          <li>Graduation report & celebration</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Your Learning Journey – Horizontal Carousel -->
+  <div class="content-card journey-timeline-wrapper">
+    <h2 class="main-title" style="margin-bottom:3.5rem;">Your Learning Journey</h2>
+    <div class="journey-timeline" id="journeyTimeline">
+      <div class="journey-panel">
+        <div class="panel-number">1</div>
+        <h3>Wake Up to Reality</h3>
+        <p>Shatter myths about time, discover where yours really goes, and learn to prioritize what actually moves the needle in your life.</p>
+      </div>
+      <div class="journey-panel">
+        <div class="panel-number">2</div>
+        <h3>Arm Yourself</h3>
+        <p>Master weekly & daily planning systems, eliminate distractions permanently, and train deep focus with powerful real-world exercises.</p>
+      </div>
+      <div class="journey-panel">
+        <div class="panel-number">3</div>
+        <h3>Become the Boss</h3>
+        <p>Build your custom Time Playbook, execute the 7-day transformation challenge, reflect deeply, and step into long-term time ownership.</p>
+      </div>
+    </div>
+    <div class="carousel-controls">
+      <button class="arrow-btn" onclick="scrollJourney(-1)">←</button>
+      <div class="dots" id="journeyDots"></div>
+      <button class="arrow-btn" onclick="scrollJourney(1)">→</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="logo">
+    <img src="https://storage.googleapis.com/skillizee-io.firebasestorage.app/images/logos/skillizee-white-logo.png" alt="SkilliZee Logo">
+  </div>
+  <p class="brand-slogan">Empowering Skills for Tomorrow's World</p>
+  <div class="social-links">
+    <a href="https://facebook.com/skillizee">Facebook</a>
+    <a href="https://instagram.com/skillizee">Instagram</a>
+    <a href="https://linkedin.com/company/skillizee">LinkedIn</a>
+  </div>
+  <div class="contact-info">
+    <p>Email: pm@skillizee.io | Phone: +91-7597318172 | Website: www.skillizee.io</p>
+  </div>
+  <p class="copyright">© 2026 SkilliZee. All rights reserved. | The Time Boss Project</p>
+</footer>
+
+<script>
+// ── Progress ──
+function updateProgress() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+  const percent = Math.round(progress * 100);
+  document.getElementById('progress-bar').style.width = percent + '%';
+  document.getElementById('progress-bar').classList.toggle('active', percent > 2);
+  document.getElementById('progress-icon').style.left = `calc(${percent}% - 30px)`;
+  document.getElementById('back-to-top').classList.toggle('visible', scrollTop > 400);
+}
+window.addEventListener('scroll', updateProgress);
+updateProgress();
+
+// ── Fullscreen & Back to Top ──
+document.getElementById('fullscreen-btn').onclick = () => {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+};
+document.getElementById('back-to-top').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+
+// ── Intro Video + Start Button (robust) ──
+const overlay = document.getElementById('entryOverlay');
+const video = document.getElementById('introVideo');
+const startBtn = document.getElementById('startButton');
+
+if (video && startBtn && overlay) {
+  startBtn.onclick = () => {
+    video.muted = false;
+    video.volume = 0.8;
+    video.play().catch(() => setTimeout(() => video.play(), 300));
+    startBtn.style.display = 'none';
+  };
+
+  video.onended = () => overlay.classList.add('hidden');
+
+  setTimeout(() => {
+    if (!overlay.classList.contains('hidden')) {
+      overlay.classList.add('hidden');
+    }
+  }, 10000);
+
+  video.onerror = () => {
+    setTimeout(() => overlay.classList.add('hidden'), 5000);
+  };
+}
+
+// ── Journey Carousel ──
+let currentJourney = 0;
+const journey = document.getElementById('journeyTimeline');
+const dotsContainer = document.getElementById('journeyDots');
+
+if (journey && dotsContainer) {
+  const panels = journey.querySelectorAll('.journey-panel');
+  const panelWidth = panels[0].offsetWidth + 42;
+
+  panels.forEach((_,i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i===0 ? ' active' : '');
+    dot.onclick = () => scrollTo(i);
+    dotsContainer.appendChild(dot);
+  });
+
+  function scrollTo(idx) {
+    currentJourney = Math.max(0, Math.min(idx, panels.length-1));
+    journey.scrollTo({ left: currentJourney * panelWidth, behavior: 'smooth' });
+    document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i===currentJourney));
+  }
+
+  window.scrollJourney = dir => scrollTo(currentJourney + dir);
+
+  setInterval(() => window.scrollJourney(1), 12000);
+}
+</script>
+
+</body>
+</html>
