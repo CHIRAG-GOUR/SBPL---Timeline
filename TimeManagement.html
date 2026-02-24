@@ -251,7 +251,7 @@
       height: 48px;
       background: url('https://login.skillizee.io/s/articles/699bfb41fe1c9b7208a0a0c4/images/Pointers.gif') center/contain no-repeat;
     }
-    /* Horizontal Journey – Numbers ONLY over boxes, permanent */
+    /* Horizontal Journey – Numbers permanent over boxes only */
     .journey-timeline-wrapper {
       margin: 4.5rem 0 6.5rem;
     }
@@ -345,7 +345,7 @@
       background: var(--energy-gold);
       transform: scale(1.8);
     }
-    /* Controls */
+    /* Fullscreen Button Only (back-to-top removed) */
     #fullscreen-btn {
       position: fixed;
       top: 24px; right: 24px;
@@ -361,23 +361,6 @@
       border: none;
     }
     #fullscreen-btn:hover { transform: scale(1.18) rotate(10deg); background: var(--fresh-flow); color: white; }
-    #back-to-top {
-      position: fixed;
-      bottom: 110px; left: 32px;
-      z-index: 10000;
-      width: 64px; height: 64px;
-      border-radius: 50%;
-      background: white;
-      box-shadow: 0 12px 36px rgba(1,89,89,0.3);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.3rem;
-      color: var(--focus-teal);
-      cursor: pointer;
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.4s;
-    }
-    #back-to-top.visible { opacity: 1; pointer-events: auto; }
     footer {
       background: var(--focus-teal);
       color: white;
@@ -412,13 +395,12 @@
   <button id="startButton">Let's Explore</button>
 </div>
 
-<!-- Floating Controls -->
+<!-- Floating Controls (only fullscreen remains) -->
 <button id="fullscreen-btn" title="Toggle Fullscreen">
   <svg fill="none" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">
     <path d="M8 3H5C3.89543 3 3 3.89543 3 5V8M21 8V5C21 3.89543 20.1046 3 19 3H16M16 21H19C20.1046 21 21 20.1046 21 19V16M3 16V19C3 20.1046 3.89543 21 5 21H8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/>
   </svg>
 </button>
-<button id="back-to-top" title="Back to Top">↑</button>
 
 <!-- Progress Elements -->
 <div id="progress-bar"></div>
@@ -437,8 +419,8 @@
 
   <div class="content-card text-center">
     <p style="font-size:1.55rem; margin:1.8rem 0 2.2rem;">
-      Stop feeling like time controls you.<br>
-      Build habits & systems that let <strong>you</strong> control time.
+      Stop feeling like time controls you.
+      Build habits & systems that let <strong>you</strong> control time.Built for busy students, professionals, and ambitious people who want results, not just busyness.
     </p>
   </div>
 
@@ -546,17 +528,15 @@ function updateProgress() {
   document.getElementById('progress-bar').style.width = percent + '%';
   document.getElementById('progress-bar').classList.toggle('active', percent > 2);
   document.getElementById('progress-icon').style.left = `calc(${percent}% - 30px)`;
-  document.getElementById('back-to-top').classList.toggle('visible', scrollTop > 400);
 }
 window.addEventListener('scroll', updateProgress);
 updateProgress();
 
-// ── Fullscreen & Back to Top ──
+// ── Fullscreen ──
 document.getElementById('fullscreen-btn').onclick = () => {
   if (!document.fullscreenElement) document.documentElement.requestFullscreen();
   else document.exitFullscreen();
 };
-document.getElementById('back-to-top').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
 
 // ── Intro Video + Start Button (robust) ──
 const overlay = document.getElementById('entryOverlay');
@@ -613,5 +593,4 @@ if (journey && dotsContainer) {
 </script>
 
 </body>
-
 </html>
